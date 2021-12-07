@@ -2,14 +2,14 @@ package common
 
 import (
 	"archive/tar"
+	"aws-sagemaker-edge-quick-device-setup/aws"
+	"aws-sagemaker-edge-quick-device-setup/cli"
 	"compress/gzip"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"smedge_installer/aws"
-	"smedge_installer/cli"
 	"sort"
 	"strconv"
 	"strings"

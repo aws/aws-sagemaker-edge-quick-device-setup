@@ -1,13 +1,13 @@
 package main
 
 import (
+	"aws-sagemaker-edge-quick-device-setup/aws"
+	"aws-sagemaker-edge-quick-device-setup/cli"
+	"aws-sagemaker-edge-quick-device-setup/common"
 	"context"
 	"fmt"
 	"log"
 	"os"
-	"smedge_installer/aws"
-	"smedge_installer/cli"
-	"smedge_installer/common"
 	"strings"
 	"time"
 
@@ -18,16 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/iot"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/sagemaker"
-	// "github.com/aws/aws-sdk-go-v2/service/sts"
 )
-
-// func getAccountId(client *sts.Client) string {
-// 	ret, err := client.GetCallerIdentity(context.TODO(), &sts.GetCallerIdentityInput{})
-// 	if err != nil {
-// 		return ""
-// 	}
-// 	return *ret.Account
-// }
 
 func main() {
 	cliArgs := cli.CliArgs{}
@@ -57,12 +48,14 @@ func main() {
 
 	cliArgs.DeviceFleetBucket = *s3OutputLocation
 
-	log.Println("Step-2 Creating device fleet policy...")
-	policy := aws.CreateDeviceFleetPolicy(iamClient, &cliArgs)
+	log.Println("Step-2a Creating device fleet policy...")
+	fleetPolicy := aws.CreateDeviceFleetPolicy(iamClient, &cliArgs)
+	log.Println("Step-2b Creating device fleet bucket policy...")
+	bucketPolicy := aws.CreateDeviceFleetBucketPolicy(iamClient, &cliArgs)
 	log.Println("Step-2 Completed.")
 
 	log.Println("Step-3 Creating device fleet role...")
-	role := aws.CreateDeviceFleetRoleIfNotExists(iamClient, &cliArgs.DeviceFleet, &cliArgs.DeviceFleetRole, policy)
+	role := aws.CreateDeviceFleetRoleIfNotExists(iamClient, &cliArgs.DeviceFleet, &cliArgs.DeviceFleetRole, fleetPolicy, bucketPolicy)
 	log.Println("Step-3 Completed.")
 
 	log.Println("Step-4 Creating iot thing type...")

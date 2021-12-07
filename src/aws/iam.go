@@ -1,12 +1,12 @@
 package aws
 
 import (
+	"aws-sagemaker-edge-quick-device-setup/cli"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
-	"smedge_installer/cli"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/iam"
@@ -111,7 +111,7 @@ func AttachAmazonSageMakerEdgeDeviceFleetPolicy(client IamClient, role *types.Ro
 }
 
 type Principal struct {
-	Service string
+	Service string `json:",omitempty"`
 }
 
 type StatementEntry struct {
@@ -120,12 +120,65 @@ type StatementEntry struct {
 	Action    []string
 	Resource  []string
 	Condition map[string]interface{} `json:",omitempty"`
-	Principal Principal              `json:",omitempty"`
+	Principal *Principal             `json:",omitempty"`
 }
 
 type PolicyDocument struct {
 	Version   string
 	Statement []StatementEntry
+}
+
+func CreateDeviceFleetBucketPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Policy {
+	policyDocument := &PolicyDocument{
+		Version: "2012-10-17",
+		Statement: []StatementEntry{
+			{
+				Sid:    "DeviceS3Access",
+				Effect: "Allow",
+				Action: []string{
+					"s3:PutObject",
+					"s3:GetBucketLocation",
+				},
+				Resource: []string{
+					fmt.Sprintf("arn:aws:s3:::%s/*", cliArgs.DeviceFleetBucket),
+					fmt.Sprintf("arn:aws:s3:::%s", cliArgs.DeviceFleetBucket),
+				},
+			},
+		},
+	}
+	policy, _ := json.MarshalIndent(policyDocument, "", " ")
+	policyDoc := string(policy)
+
+	policyDescription := fmt.Sprintf("SageMaker device fleet bucket policy for %s", cliArgs.DeviceFleet)
+	policyPath := "/"
+	policyName := fmt.Sprintf("%s-%s-policy", strings.ToLower(cliArgs.DeviceFleet), strings.ToLower(cliArgs.DeviceFleetBucket))
+	policyArn := fmt.Sprintf("arn:aws:iam::%s:policy/%s", cliArgs.Account, policyName)
+
+	getPolicyOutput, err := client.GetPolicy(context.TODO(), &iam.GetPolicyInput{
+		PolicyArn: &policyArn,
+	})
+
+	if err != nil {
+		var nse *types.NoSuchEntityException
+		if errors.As(err, &nse) {
+			ret, err := client.CreatePolicy(context.TODO(), &iam.CreatePolicyInput{
+				Description:    &policyDescription,
+				Path:           &policyPath,
+				PolicyDocument: &policyDoc,
+				PolicyName:     &policyName,
+			})
+
+			if err != nil {
+				log.Fatal("Error", err)
+			}
+
+			return ret.Policy
+		}
+
+		log.Fatal("Error", err)
+	}
+
+	return getPolicyOutput.Policy
 }
 
 func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Policy {
@@ -147,18 +200,6 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 		Version: "2012-10-17",
 		Statement: []StatementEntry{
 			{
-				Sid:    "DeviceS3Access",
-				Effect: "Allow",
-				Action: []string{
-					"s3:PutObject",
-					"s3:GetBucketLocation",
-				},
-				Resource: []string{
-					fmt.Sprintf("arn:aws:s3:::%s/*", cliArgs.DeviceFleetBucket),
-					fmt.Sprintf("arn:aws:s3:::%s", cliArgs.DeviceFleetBucket),
-				},
-			},
-			{
 				Sid:    "SageMakerEdgeApis",
 				Effect: "Allow",
 				Action: []string{
@@ -166,7 +207,7 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 					"sagemaker:GetDeviceRegistration",
 				},
 				Resource: []string{
-					fmt.Sprintf("arn:aws:sagemaker:%s:%s:device-fleet/%s/device/%s", cliArgs.Region, cliArgs.Account, strings.ToLower(cliArgs.DeviceFleet), strings.ToLower(cliArgs.DeviceName)),
+					fmt.Sprintf("arn:aws:sagemaker:%s:%s:device-fleet/%s/device/*", cliArgs.Region, cliArgs.Account, strings.ToLower(cliArgs.DeviceFleet)),
 					fmt.Sprintf("arn:aws:sagemaker:%s:%s:device-fleet/%s", cliArgs.Region, cliArgs.Account, strings.ToLower(cliArgs.DeviceFleet)),
 				},
 			},
@@ -242,15 +283,23 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 	return getPolicyOutput.Policy
 }
 
-func CreateDeviceFleetRoleIfNotExists(client IamClient, fleetName *string, roleName *string, policy *types.Policy) *types.Role {
+func CreateDeviceFleetRoleIfNotExists(client IamClient, fleetName *string, roleName *string, fleetPolicy *types.Policy, bucketPolicy *types.Policy) *types.Role {
 	role := GetDeviceFleetRole(client, fleetName, roleName)
 	if role == nil {
 		role = CreateDeviceFleetRole(client, fleetName, roleName)
 	}
-	attachedPolicy := CheckIfPolicyIsAlreadyAttachedToTheRole(client, role.RoleName, policy.PolicyName)
-	if attachedPolicy == nil {
-		log.Println("Attaching device fleet policy to the")
-		AttachAmazonSageMakerEdgeDeviceFleetPolicy(client, role, policy.Arn)
+	attachedFleetPolicy := CheckIfPolicyIsAlreadyAttachedToTheRole(client, role.RoleName, fleetPolicy.PolicyName)
+
+	if attachedFleetPolicy == nil {
+		log.Println("Attaching device fleet policy")
+		AttachAmazonSageMakerEdgeDeviceFleetPolicy(client, role, fleetPolicy.Arn)
+	}
+
+	attachedBucketPolicy := CheckIfPolicyIsAlreadyAttachedToTheRole(client, role.RoleName, bucketPolicy.PolicyName)
+
+	if attachedBucketPolicy == nil {
+		log.Println("Attaching device fleet bucket policy")
+		AttachAmazonSageMakerEdgeDeviceFleetPolicy(client, role, bucketPolicy.Arn)
 	}
 	return role
 }

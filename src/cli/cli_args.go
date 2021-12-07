@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const VERSION = "1.0.0"
+
 type TargetPlatform struct {
 	Os          string
 	Arch        string
@@ -71,8 +73,8 @@ func ParseArgs(cliArgs *CliArgs) {
 	deviceFleet := flag.String("deviceFleet", "", "Name of the device fleet.")
 	deviceName := flag.String("deviceName", "", "Name of the device.")
 
-	targetOs := flag.String("os", "", "Name of Os")
-	targetArch := flag.String("arch", "", "Name of device architecture.")
+	targetOs := flag.String("os", os.Getenv("GOOS"), "Name of Os")
+	targetArch := flag.String("arch", os.Getenv("GOARCH"), "Name of device architecture.")
 	targetAccelerator := flag.String("accelerator", "", "Name of accelerator.")
 
 	iotThingType := flag.String("iotThingType", "", "Iot thing type for the device.")
@@ -87,10 +89,17 @@ func ParseArgs(cliArgs *CliArgs) {
 		log.Fatal("Error", err)
 	}
 
-	defaultAgentDirectory := fmt.Sprintf("%s/.agent", cwd)
+	defaultAgentDirectory := fmt.Sprintf("%s/demo-agent", cwd)
 	agentDirectory := flag.String("agentDirectory", defaultAgentDirectory, "Local path to store agent")
 
+	version := flag.Bool("version", false, "Prints the version of aws-sagemaker-edge-quick-device-setup")
+
 	flag.Parse()
+
+	if *version {
+		fmt.Println(VERSION)
+		os.Exit(0)
+	}
 
 	if *deviceFleet == "" || *deviceName == "" || *accountId == "" {
 		log.Fatal("Missing DeviceFleet or DeviceName or Account")

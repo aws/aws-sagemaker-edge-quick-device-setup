@@ -1,4 +1,4 @@
-module smedge_installer
+module aws-sagemaker-edge-quick-device-setup
 
 go 1.13
 

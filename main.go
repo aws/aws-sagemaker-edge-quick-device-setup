@@ -1,13 +1,14 @@
 package main
 
 import (
-	"aws-sagemaker-edge-quick-device-setup/aws"
-	"aws-sagemaker-edge-quick-device-setup/cli"
-	"aws-sagemaker-edge-quick-device-setup/common"
 	"context"
 	"fmt"
 	"log"
 	"os"
+	"quick-device-setup/aws"
+	"quick-device-setup/cli"
+	"quick-device-setup/common"
+	"quick-device-setup/distinfo"
 	"strings"
 	"time"
 
@@ -38,6 +39,11 @@ func main() {
 	smClient := sagemaker.NewFromConfig(cfg)
 	iotClient := iot.NewFromConfig(cfg)
 	s3Client := s3.NewFromConfig(cfg)
+
+	log.Println("Distribution Info:")
+	log.Printf("Version: %s\n", distinfo.VERSION)
+	log.Printf("Os: %s\n", distinfo.OS)
+	log.Printf("Arch: %s\n", distinfo.ARCH)
 
 	log.Println("Step-1 Creating S3 bucket for storing device fleet data...")
 	s3OutputLocation := aws.CreateS3Bucket(s3Client, &cliArgs.DeviceFleetBucket, &cliArgs.Account)

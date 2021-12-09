@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"quick-device-setup/distinfo"
 	"strings"
 )
-
-const VERSION = "1.0.0"
 
 type TargetPlatform struct {
 	Os          string
@@ -73,8 +72,8 @@ func ParseArgs(cliArgs *CliArgs) {
 	deviceFleet := flag.String("deviceFleet", "", "Name of the device fleet.")
 	deviceName := flag.String("deviceName", "", "Name of the device.")
 
-	targetOs := flag.String("os", os.Getenv("GOOS"), "Name of Os")
-	targetArch := flag.String("arch", os.Getenv("GOARCH"), "Name of device architecture.")
+	targetOs := flag.String("os", "", "Name of Os")
+	targetArch := flag.String("arch", "", "Name of device architecture.")
 	targetAccelerator := flag.String("accelerator", "", "Name of accelerator.")
 
 	iotThingType := flag.String("iotThingType", "", "Iot thing type for the device.")
@@ -92,12 +91,25 @@ func ParseArgs(cliArgs *CliArgs) {
 	defaultAgentDirectory := fmt.Sprintf("%s/demo-agent", cwd)
 	agentDirectory := flag.String("agentDirectory", defaultAgentDirectory, "Local path to store agent")
 
-	version := flag.Bool("version", false, "Prints the version of aws-sagemaker-edge-quick-device-setup")
+	version := flag.Bool("version", false, "Print the version of aws-sagemaker-edge-quick-device-setup")
+	dist := flag.Bool("dist", false, "Print distribution information.")
 
 	flag.Parse()
 
 	if *version {
-		fmt.Println(VERSION)
+		fmt.Println(distinfo.VERSION)
+		os.Exit(0)
+	}
+
+	if *dist {
+		fmt.Println("Distribution Information")
+		fmt.Println("Version: ", distinfo.VERSION)
+		if distinfo.OS != "" {
+			fmt.Println("Os: ", distinfo.OS)
+		}
+		if distinfo.ARCH != "" {
+			fmt.Println("Architecture: ", distinfo.ARCH)
+		}
 		os.Exit(0)
 	}
 
@@ -107,6 +119,22 @@ func ParseArgs(cliArgs *CliArgs) {
 
 	cliArgs.DeviceFleet = *deviceFleet
 	cliArgs.DeviceName = *deviceName
+
+	if *targetOs == "" {
+		log.Println(distinfo.OS)
+		*targetOs = distinfo.OS
+	}
+
+	if *targetArch == "" {
+		if distinfo.ARCH == "amd64" {
+			*targetArch = "x64"
+		} else if distinfo.ARCH == "amd" {
+			*targetArch = "x86"
+		} else {
+			*targetArch = distinfo.ARCH
+		}
+	}
+
 	cliArgs.TargetPlatform = TargetPlatform{Os: strings.ToLower(*targetOs), Arch: strings.ToLower(*targetArch), Accelerator: strings.ToLower(*targetAccelerator)}
 	cliArgs.TargetPlatform.Validate()
 

@@ -1,11 +1,11 @@
 package aws
 
 import (
-	"aws-sagemaker-edge-quick-device-setup/cli"
 	"context"
 	"errors"
 	"fmt"
 	"log"
+	"quick-device-setup/cli"
 	"reflect"
 
 	iamTypes "github.com/aws/aws-sdk-go-v2/service/iam/types"

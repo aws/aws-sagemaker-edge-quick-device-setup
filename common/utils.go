@@ -68,7 +68,19 @@ func GetAgentRelease(client *s3.Client, bucketName *string, prefix *string) *Rel
 }
 
 func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
-	agentBucket := fmt.Sprintf("sagemaker-edge-release-store-us-west-2-%s-%s", cliArgs.TargetPlatform.Os, cliArgs.TargetPlatform.Arch)
+
+	arch := cliArgs.TargetPlatform.Arch
+
+	// map target arch to the s3 bucket
+	if cliArgs.TargetPlatform.Arch == "amd64" {
+		arch = "x64"
+	} else if cliArgs.TargetPlatform.Arch == "386" {
+		arch = "x86"
+	} else if cliArgs.TargetPlatform.Arch == "arm64" {
+		arch = "armv8"
+	}
+
+	agentBucket := fmt.Sprintf("sagemaker-edge-release-store-us-west-2-%s-%s", cliArgs.TargetPlatform.Os, arch)
 	s3Prefix := "Releases/"
 	release := GetAgentRelease(client, &agentBucket, &s3Prefix)
 	agentFile := aws.DownloadFileFromS3(client, &agentBucket, &release.s3Location)

@@ -28,12 +28,12 @@ func (tp *TargetPlatform) Validate() {
 	}
 
 	if tp.Os == "linux" {
-		if tp.Arch != "armv8" && tp.Arch != "x64" {
+		if tp.Arch != "arm64" && tp.Arch != "amd64" {
 			log.Fatal("Invalid architecture for Linux.")
 		}
 	}
 	if tp.Os == "windows" {
-		if tp.Arch != "x86" && tp.Arch != "x64" {
+		if tp.Arch != "amd64" && tp.Arch != "386" {
 			log.Fatal("Invalid architecture for Windows.")
 		}
 	}
@@ -126,13 +126,7 @@ func ParseArgs(cliArgs *CliArgs) {
 	}
 
 	if *targetArch == "" {
-		if distinfo.ARCH == "amd64" {
-			*targetArch = "x64"
-		} else if distinfo.ARCH == "amd" {
-			*targetArch = "x86"
-		} else {
-			*targetArch = distinfo.ARCH
-		}
+		*targetArch = distinfo.ARCH
 	}
 
 	cliArgs.TargetPlatform = TargetPlatform{Os: strings.ToLower(*targetOs), Arch: strings.ToLower(*targetArch), Accelerator: strings.ToLower(*targetAccelerator)}

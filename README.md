@@ -3,7 +3,7 @@
 
 # aws-sagemaker-egde-quick-device-setup
 
-This package provides a command line interface to easily onboard device with [SageMaker Edge](https://aws.amazon.com/sagemaker/edge/)
+This package provides a command line interface to easily onboard device with [SageMaker Edge](https://aws.amazon.com/sagemaker/edge/). Run the cli on the device you would like to provision as it will create all the necessary artifacts on the device.
 
 Jump to:
 

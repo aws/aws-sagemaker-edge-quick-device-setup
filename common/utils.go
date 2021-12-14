@@ -87,14 +87,14 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 	file, err := os.Open(*agentFile)
 
 	if err != nil {
-		log.Fatal("Error: ", err)
+		log.Fatal("Error ", err)
 	}
 
 	defer file.Close()
 	var fileReader io.ReadCloser = file
 	if strings.HasSuffix(*agentFile, "gz") {
 		if fileReader, err = gzip.NewReader(file); err != nil {
-			log.Fatal("Error", err)
+			log.Fatal("Error ", err)
 		}
 		defer fileReader.Close()
 	}
@@ -105,7 +105,7 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 			if err == io.EOF {
 				break
 			}
-			log.Fatal("Error", err)
+			log.Fatal("Error ", err)
 		}
 
 		// get the individual filename and extract to the current directory
@@ -119,7 +119,7 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 				err = os.MkdirAll(filename, os.FileMode(header.Mode)) // or use 0755 if you prefer
 
 				if err != nil {
-					log.Fatal("Error", err)
+					log.Fatal("Error ", err)
 				}
 
 			case tar.TypeReg:
@@ -128,7 +128,7 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 				writer, err := os.Create(filename)
 
 				if err != nil {
-					log.Fatal(err)
+					log.Fatal("Error ", err)
 				}
 
 				io.Copy(writer, tarBallReader)
@@ -136,7 +136,7 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 				err = os.Chmod(filename, os.FileMode(header.Mode))
 
 				if err != nil {
-					log.Fatal(err)
+					log.Fatal("Error ", err)
 				}
 
 				writer.Close()

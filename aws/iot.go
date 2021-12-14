@@ -34,7 +34,7 @@ func GetIotThingType(client IotClient, iotThingType *string) *iot.DescribeThingT
 		if errors.As(err, &rnf) {
 			return nil
 		}
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to describe thing type %s, Encountered error %s\n", *iotThingType, err)
 	}
 
 	return ret
@@ -63,7 +63,7 @@ func CreateIotThingType(client IotClient, iotThingType *string) *CreateIotThingT
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to create thing type %s.Encountered error %s\n", *iotThingType, err)
 	}
 
 	return &CreateIotThingTypeOutput{
@@ -85,7 +85,7 @@ func GetIotThing(client IotClient, iotThingName *string) *iot.DescribeThingOutpu
 			log.Println("Thing doesn't exist")
 			return nil
 		}
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to describe thing %s. Encountered error %s\n", *iotThingName, err)
 	}
 
 	return ret
@@ -98,9 +98,9 @@ type CreateIotThingOutput struct {
 	ThingTypeName *string
 }
 
-func CreateIotThing(client IotClient, iotThingType *string, IotThingName *string) *CreateIotThingOutput {
+func CreateIotThing(client IotClient, iotThingType *string, iotThingName *string) *CreateIotThingOutput {
 
-	describeThingOutput := GetIotThing(client, IotThingName)
+	describeThingOutput := GetIotThing(client, iotThingName)
 
 	if describeThingOutput != nil {
 		return &CreateIotThingOutput{
@@ -111,12 +111,12 @@ func CreateIotThing(client IotClient, iotThingType *string, IotThingName *string
 	}
 
 	ret, err := client.CreateThing(context.TODO(), &iot.CreateThingInput{
-		ThingName:     IotThingName,
+		ThingName:     iotThingName,
 		ThingTypeName: iotThingType,
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to create thing %s. Encountered error %s\n", *iotThingName, err)
 	}
 
 	return &CreateIotThingOutput{
@@ -132,7 +132,7 @@ func CreateIOTCertificates(client IotClient) *iot.CreateKeysAndCertificateOutput
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to create keys and certificates. Encountered error %s\n", err)
 	}
 	return ret
 }
@@ -141,7 +141,7 @@ func writeStringToFile(filePath *string, contents *string) {
 	file, err := os.Create(*filePath)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create file %s. Encountered error %s\n", *filePath, err)
 	}
 
 	defer file.Close()
@@ -168,7 +168,7 @@ func GetIotCredentialProviderEndpoint(client IotClient, roleNameAlias *string) *
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to describe endpoint for %s. Encountered error %s\n", endpointType, err)
 	}
 
 	endpoint := fmt.Sprintf("https://%s/role-aliases/%s/credentials", *ret.EndpointAddress, *roleNameAlias)
@@ -182,7 +182,7 @@ func AttachThingToCertificate(client IotClient, certificateArn *string, iotThing
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to attach thing principal for thing name %s and certificate %s. Encountered error %s\n", *iotThingName, *certificateArn, err)
 	}
 }
 
@@ -204,13 +204,13 @@ func CreateAndAttachRoleAliasPolicy(client IotClient, roleAliasArn *string, cert
 		PolicyName:     &policyName,
 		PolicyDocument: &policyDocument,
 	}); err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to cerate iot policy %s. Encountered error %s\n", policyName, err)
 	}
 
 	if _, err := client.AttachPolicy(context.TODO(), &iot.AttachPolicyInput{
 		PolicyName: &policyName,
 		Target:     certArn,
 	}); err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to attach iot policy %s. Encountered error %s\n", policyName, err)
 	}
 }

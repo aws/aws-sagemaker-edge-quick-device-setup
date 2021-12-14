@@ -32,7 +32,7 @@ func main() {
 	}))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to load default aws config. Encountered Error ", err)
 	}
 
 	iamClient := iam.NewFromConfig(cfg)

@@ -45,7 +45,7 @@ func CreateDeviceFleetRole(client IamClient, fleetName *string, roleName *string
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to create role with role name %s. Encountered Error %s\n", *roleName, err)
 	}
 
 	return result.Role
@@ -62,7 +62,7 @@ func GetDeviceFleetRole(client IamClient, fleetName *string, roleName *string) *
 			log.Println("Role doesn't exist.")
 			return nil
 		}
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to get role with role name %s. Encountered error %s\n", *roleName, err)
 	}
 
 	return result.Role
@@ -80,7 +80,7 @@ func CheckIfPolicyIsAlreadyAttachedToTheRole(client IamClient, roleName *string,
 		})
 
 		if err != nil {
-			log.Fatal("Error", err)
+			log.Fatalf("Failed to list attached role policies for %s. Encountered Error %s\n", *roleName, err)
 		}
 
 		for _, policy := range ret.AttachedPolicies {
@@ -106,7 +106,7 @@ func AttachAmazonSageMakerEdgeDeviceFleetPolicy(client IamClient, role *types.Ro
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to attach policy %s to role name %s. Encountered error %s\n", *policyArn, *role.RoleName, err)
 	}
 }
 
@@ -169,13 +169,13 @@ func CreateDeviceFleetBucketPolicy(client IamClient, cliArgs *cli.CliArgs) *type
 			})
 
 			if err != nil {
-				log.Fatal("Error", err)
+				log.Fatalf("Failed to create policy with policy name %s. Encountered error %s\n", policyName, err)
 			}
 
 			return ret.Policy
 		}
 
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to get policy with name %s. Encountered error %s\n", policyName, err)
 	}
 
 	return getPolicyOutput.Policy
@@ -193,7 +193,7 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 	}`)
 
 	if err := json.Unmarshal(conditionByt, &condition); err != nil {
-		log.Fatal("Error", err)
+		log.Fatal("Invaild json doc. Encountered err ", err)
 	}
 
 	policyDocument := &PolicyDocument{
@@ -271,13 +271,13 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 			})
 
 			if err != nil {
-				log.Fatal("Error", err)
+				log.Fatalf("Failed to create policy with name %s. Encountered error %s\n", policyName, err)
 			}
 
 			return ret.Policy
 		}
 
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to get policy with name %s. Encountered error %s\n", policyName, err)
 	}
 
 	return getPolicyOutput.Policy

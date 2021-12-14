@@ -85,7 +85,7 @@ func ParseArgs(cliArgs *CliArgs) {
 	cwd, err := os.Getwd()
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatal("Error ", err)
 	}
 
 	defaultAgentDirectory := fmt.Sprintf("%s/demo-agent", cwd)

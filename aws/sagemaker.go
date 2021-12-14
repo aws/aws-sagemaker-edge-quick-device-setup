@@ -55,7 +55,7 @@ func CreateDeviceFleet(client SagemakerClient, fleetName *string, role *iamTypes
 			if errors.As(err, &oe) {
 				log.Printf("failed to call service: %s, operation: %s, error: %v", oe.Service(), oe.Operation(), oe.Unwrap())
 			}
-			log.Fatal("Error: ", reflect.TypeOf(err))
+			log.Fatalf("Failed to create device fleet %s. Encountered error %s\n", *fleetName, reflect.TypeOf(err))
 		}
 
 	}
@@ -108,7 +108,7 @@ func RegisterDevice(client SagemakerClient, fleetName *string, deviceName *strin
 		})
 
 		if err != nil {
-			log.Fatal("Error: ", err)
+			log.Fatalf("Failed to register device %s with fleet %s. Encountered error %s", *fleetName, *deviceName, err)
 		}
 	}
 }
@@ -119,7 +119,7 @@ func GetRoleAliasArn(client SagemakerClient, deviceFleet *string) *string {
 	})
 
 	if err != nil {
-		log.Fatal("Error", err)
+		log.Fatalf("Failed to describe device fleet %s. Encountered error %s", *deviceFleet, err)
 	}
 
 	return ret.IotRoleAlias

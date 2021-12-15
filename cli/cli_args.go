@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"aws-sagemaker-edge-quick-device-setup/constants"
 	"aws-sagemaker-edge-quick-device-setup/distinfo"
 	"flag"
 	"fmt"
@@ -28,12 +29,12 @@ func (tp *TargetPlatform) Validate() {
 	}
 
 	if tp.Os == "linux" {
-		if tp.Arch != "arm64" && tp.Arch != "amd64" {
+		if tp.Arch != constants.ARM64 && tp.Arch != constants.ARMV8 && tp.Arch != constants.AMD64 && tp.Arch != constants.X64 && tp.Arch != constants.X86_64 {
 			log.Fatal("Invalid architecture for Linux.")
 		}
 	}
 	if tp.Os == "windows" {
-		if tp.Arch != "amd64" && tp.Arch != "386" {
+		if tp.Arch != constants.AMD64 && tp.Arch != constants.I386 && tp.Arch != constants.X86 && tp.Arch != constants.X64 && tp.Arch != constants.X86_64 {
 			log.Fatal("Invalid architecture for Windows.")
 		}
 	}

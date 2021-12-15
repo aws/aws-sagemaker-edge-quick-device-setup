@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"aws-sagemaker-edge-quick-device-setup/aws"
 	"aws-sagemaker-edge-quick-device-setup/cli"
+	"aws-sagemaker-edge-quick-device-setup/constants"
 	"compress/gzip"
 	"fmt"
 	"io"
@@ -72,12 +73,12 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 	arch := cliArgs.TargetPlatform.Arch
 
 	// map target arch to the s3 bucket
-	if cliArgs.TargetPlatform.Arch == "amd64" {
-		arch = "x64"
-	} else if cliArgs.TargetPlatform.Arch == "386" {
-		arch = "x86"
-	} else if cliArgs.TargetPlatform.Arch == "arm64" {
-		arch = "armv8"
+	if cliArgs.TargetPlatform.Arch == constants.AMD64 || cliArgs.TargetPlatform.Arch == constants.X86_64 || cliArgs.TargetPlatform.Arch == constants.X64 {
+		arch = constants.X64
+	} else if cliArgs.TargetPlatform.Arch == constants.I386 || cliArgs.TargetPlatform.Arch == constants.X86 {
+		arch = constants.X86
+	} else if cliArgs.TargetPlatform.Arch == constants.ARM64 || cliArgs.TargetPlatform.Arch == constants.ARMV8 {
+		arch = constants.ARMV8
 	}
 
 	agentBucket := fmt.Sprintf("sagemaker-edge-release-store-us-west-2-%s-%s", cliArgs.TargetPlatform.Os, arch)

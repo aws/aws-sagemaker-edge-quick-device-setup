@@ -1,15 +1,18 @@
 VERSION=0.0.1
 
+
 build () {
     GOOS=$1 GOARCH=$2 go build -ldflags "-X aws-sagemaker-edge-quick-device-setup/distinfo.OS=$1 -X aws-sagemaker-edge-quick-device-setup/distinfo.ARCH=$2 -X aws-sagemaker-edge-quick-device-setup/distinfo.VERSION=$VERSION" -o ./bin/aws-sagemaker-edge-quick-device-setup-$1-$2 main.go
 }
 
-if [ $1 != "linux" -a $1 != "windows" ]; then
-    echo "Invalid Operating System!"
-fi
-
-if [ $2 != "amd64" -a $2 != "386" -a $2 != "arm64" ]; then
-    echo "Invalid Architecture!"
+if [ $1-$2 != "linux-amd64" -a $1-$2 != "linux-arm64" -a $1-$2 != "windows-amd64" -a $1-$2 != "windows-386" ]; then
+    echo "USAGE: bash build.sh OS ARCH"
+    echo "Supported operating system and architecture combinations"
+    echo "- linux amd64"
+    echo "- linux arm64"
+    echo "- windows amd64"
+    echo "- windows 386"
+    exit 1
 fi
 
 

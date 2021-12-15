@@ -1,8 +1,7 @@
 VERSION=1.0.0
 
 build () {
-    GOOS=$1 GOARCH=$2
-    go build -ldflags "-X aws-sagemaker-edge-quick-device-setup/distinfo.OS=$1 -X aws-sagemaker-edge-quick-device-setup/distinfo.ARCH=$2 -X aws-sagemaker-edge-quick-device-setup/distinfo.VERSION=$VERSION" -o ./bin/aws-sagemaker-edge-quick-device-setup-$1-$2 main.go
+    GOOS=$1 GOARCH=$2 go build -ldflags "-X aws-sagemaker-edge-quick-device-setup/distinfo.OS=$1 -X aws-sagemaker-edge-quick-device-setup/distinfo.ARCH=$2 -X aws-sagemaker-edge-quick-device-setup/distinfo.VERSION=$VERSION" -o ./bin/aws-sagemaker-edge-quick-device-setup-$1-$2 main.go
 }
 
 if [ $1 != "linux" -a $1 != "windows" ]; then

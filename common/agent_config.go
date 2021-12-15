@@ -1,10 +1,10 @@
 package common
 
 import (
+	"aws-sagemaker-edge-quick-device-setup/cli"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"quick-device-setup/cli"
 )
 
 type AgentConfig struct {

@@ -1,12 +1,12 @@
 package aws
 
 import (
+	"aws-sagemaker-edge-quick-device-setup/cli"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
-	"quick-device-setup/cli"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/iam"

@@ -1,11 +1,11 @@
 package cli
 
 import (
+	"aws-sagemaker-edge-quick-device-setup/distinfo"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-	"quick-device-setup/distinfo"
 	"strings"
 )
 
@@ -101,15 +101,16 @@ func ParseArgs(cliArgs *CliArgs) {
 		os.Exit(0)
 	}
 
+	fmt.Println("Distribution Information")
+	fmt.Println("Version: ", distinfo.VERSION)
+	if distinfo.OS != "" {
+		fmt.Println("Os: ", distinfo.OS)
+	}
+	if distinfo.ARCH != "" {
+		fmt.Println("Architecture: ", distinfo.ARCH)
+	}
+
 	if *dist {
-		fmt.Println("Distribution Information")
-		fmt.Println("Version: ", distinfo.VERSION)
-		if distinfo.OS != "" {
-			fmt.Println("Os: ", distinfo.OS)
-		}
-		if distinfo.ARCH != "" {
-			fmt.Println("Architecture: ", distinfo.ARCH)
-		}
 		os.Exit(0)
 	}
 

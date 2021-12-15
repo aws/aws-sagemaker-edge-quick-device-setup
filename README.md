@@ -1,4 +1,4 @@
-| **WARNING**: This tool is meant for development/testing use only. We don't recommend the use of this tool for production! |
+| &#9888; **WARNING**: This tool is meant for development/testing use only. We don't recommend the use of this tool for production! &#9888; |
 | --- |
 
 # aws-sagemaker-egde-quick-device-setup
@@ -15,12 +15,12 @@ Jump to:
 Getting Started
 ---------------
 
-This README is for quick-device-setup version 0.0.1
+This README is for aws-sagemaker-edge-quick-device-setup version 0.0.1
 
 Installation
 ------------
 
-`quick-device-setup` is written in golang. You can also geneate the binary directly from the source using
+`aws-sagemaker-edge-quick-device-setup` is written in golang. You can also geneate the binary directly from the source using
 
 `go build`
 
@@ -197,7 +197,7 @@ Following are all the opetions supported by the cli
   -account string
         AWS AccountId
   -agentDirectory string
-        Local path to store agent (default "/home/ubuntu/edge_manager/quick-device-setup/src/demo-agent")
+        Local path to store agent (default "/home/ubuntu/edge_manager/aws-sagemaker-edge-quick-device-setup/src/demo-agent")
   -arch string
         Name of device architecture.
   -deviceFleet string
@@ -219,7 +219,7 @@ Following are all the opetions supported by the cli
   -s3FolderPrefix string
         S3 prefix to store captured data.
   -version
-        Prints the version of quick-device-setup
+        Prints the version of aws-sagemaker-edge-quick-device-setup
 ```
 
 To view help documentation, use one of the following:

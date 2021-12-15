@@ -1,4 +1,4 @@
-module quick-device-setup
+module aws-sagemaker-edge-quick-device-setup
 
 go 1.13
 

@@ -27,7 +27,7 @@ Installation
 Optionally there is a build script to generate binaries and shasums for the relevant os/architecture combination
 
 
-We support out of the the box distributions for known os and architectures. Check out `Releases <#releases>`__ for latest distributions.
+We support out of the the box distributions for known os and architectures. Check out [Releases](#releases) for latest distributions.
 
 
 `bash build.sh {os} {arch}`

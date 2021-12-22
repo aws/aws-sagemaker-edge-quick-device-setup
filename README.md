@@ -7,13 +7,15 @@ This package provides a command line interface to easily onboard device with [Sa
 
 Jump to:
 
-- [Getting Started ](#getting-started)
+- [Installation ](#installation)
+- [Configuration ](#configuration)
+- [Permissions ](#permissions)
+- [Basic Commands ](#basic-commands)
+- [Sample ](#sample)
 - [Getting Help](#getting-help)
 - [More Resources](#more-resource)
 
 
-Getting Started
----------------
 
 This README is for aws-sagemaker-edge-quick-device-setup version 0.0.1
 
@@ -27,7 +29,7 @@ Installation
 Optionally there is a build script to generate binaries and shasums for the relevant os/architecture combination
 
 
-We support out of the the box distributions for known os and architectures. Check out `Releases <#releases>`__ for latest distributions.
+We support out of the the box distributions for known os and architectures. Check out [Releases](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases) for latest distributions.
 
 
 `bash build.sh {os} {arch}`
@@ -137,6 +139,15 @@ To get the version of the cli:
 
 ```
    $ aws-sagemaker-edge-quick-device-setup --version
+```
+
+Sample
+------
+
+If your device is linux amd64(x86_64). You could use one of the pre built distribution [aws-sagemaker-edge-quick-device-setup-linux-amd64](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases/download/v0.0.1/aws-sagemaker-edge-quick-device-setup-linux-amd64) to setup the device. For distributions os and architecture are hardcoded into the binaries.
+
+```
+   $ aws-sagemaker-edge-quick-device-setup-linux-amd64 --deviceFleet TestFleet --device TestDevice -account AWS_ACCOUNT_ID
 ```
 
 Getting Help

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"io/ioutil"
 	"path/filepath"
 
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
@@ -62,7 +63,11 @@ func DownloadFileFromS3ToPath(client S3Client, bucketName *string, key *string, 
 }
 
 func DownloadFileFromS3(client S3Client, bucketName *string, key *string) *string {
-	filePath := fmt.Sprintf("/tmp/%s", *key)
+	tempDir, err := ioutil.TempDir("", "aws_sagemaker_quick_device_setup")
+	if err != nil {
+		log.Fatal("Failed to create temp directory.", err)
+	}
+	filePath := filepath.Join(tempDir, *key)
 	return DownloadFileFromS3ToPath(client, bucketName, key, &filePath)
 }
 

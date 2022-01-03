@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 )
 
 type AgentConfig struct {
@@ -36,13 +37,13 @@ func (config *AgentConfig) FromCliArgs(cliArgs *cli.CliArgs) {
 	config.CaptureDataPushPeriodSeconds = 5
 	config.FolderPrefix = cliArgs.S3FolderPrefix
 	config.Region = cliArgs.Region
-	config.AwsRootCertsPath = fmt.Sprintf("%s/certificates", cliArgs.AgentDirectory)
-	config.AwsCaCertFile = fmt.Sprintf("%s/iot-credentials/AmazonRootCA1.pem", cliArgs.AgentDirectory)
-	config.AwsCertFile = fmt.Sprintf("%s/iot-credentials/device.pem.crt", cliArgs.AgentDirectory)
-	config.AwsCertPKFile = fmt.Sprintf("%s/iot-credentials/private.pem.key", cliArgs.AgentDirectory)
+	config.AwsRootCertsPath = filepath.Join(cliArgs.AgentDirectory, "certificates")
+	config.AwsCaCertFile = filepath.Join(cliArgs.AgentDirectory, "iot-credentials", "AmazonRootCA1.pem")
+	config.AwsCertFile = filepath.Join(cliArgs.AgentDirectory, "iot-credentials", "device.pem.crt")
+	config.AwsCertPKFile = filepath.Join(cliArgs.AgentDirectory, "iot-credentials", "private.pem.key")
 	config.ProviderAwsIotCredEndpoint = "endpoint"
 	config.ProviderProvider = "Aws"
-	config.ProviderProviderPath = fmt.Sprintf("%s/lib/libprovider_aws.so", cliArgs.AgentDirectory)
+	config.ProviderProviderPath = filepath.Join(cliArgs.AgentDirectory, "lib", "libprovider_aws.so")
 	config.S3BucketName = cliArgs.DeviceFleetBucket
 	config.DataCaptureDestination = "Cloud"
 }

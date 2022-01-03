@@ -4,6 +4,7 @@ import (
 	"aws-sagemaker-edge-quick-device-setup/constants"
 	"aws-sagemaker-edge-quick-device-setup/distinfo"
 	"flag"
+	"path/filepath"
 	"fmt"
 	"log"
 	"os"
@@ -89,7 +90,7 @@ func ParseArgs(cliArgs *CliArgs) {
 		log.Fatal("Error ", err)
 	}
 
-	defaultAgentDirectory := fmt.Sprintf("%s/demo-agent", cwd)
+	defaultAgentDirectory := filepath.Join(cwd, "demo-agent")
 	agentDirectory := flag.String("agentDirectory", defaultAgentDirectory, "Local path to store agent")
 
 	version := flag.Bool("version", false, "Print the version of aws-sagemaker-edge-quick-device-setup")
@@ -136,9 +137,6 @@ func ParseArgs(cliArgs *CliArgs) {
 
 	cliArgs.Account = *accountId
 	cliArgs.Region = *region
-	if !strings.HasPrefix(*agentDirectory, "/") {
-		*agentDirectory = fmt.Sprintf("%s/%s", cwd, *agentDirectory)
-	}
 	cliArgs.AgentDirectory = *agentDirectory
 
 	if *iotThingType == "" {

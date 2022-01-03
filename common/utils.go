@@ -6,6 +6,7 @@ import (
 	"aws-sagemaker-edge-quick-device-setup/cli"
 	"aws-sagemaker-edge-quick-device-setup/constants"
 	"compress/gzip"
+	"archive/zip"
 	"fmt"
 	"io"
 	"log"
@@ -14,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"path/filepath"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
@@ -48,7 +50,7 @@ func GetAgentRelease(client *s3.Client, bucketName *string, prefix *string) *Rel
 			releaseDates = append(releaseDates, date)
 		}
 
-		if strings.HasSuffix(paths[2], "tgz") {
+		if strings.HasSuffix(paths[2], "tgz") || strings.HasSuffix(paths[2], "zip") {
 			release.s3Location = *value.Key
 		} else if strings.HasSuffix(paths[2], "shasum") {
 			if strings.HasPrefix(paths[2], "sha1") {
@@ -85,6 +87,70 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 	s3Prefix := "Releases/"
 	release := GetAgentRelease(client, &agentBucket, &s3Prefix)
 	agentFile := aws.DownloadFileFromS3(client, &agentBucket, &release.s3Location)
+	if strings.HasSuffix(*agentFile, "gz") {
+		untar(agentFile, &cliArgs.AgentDirectory)
+	} else if strings.HasSuffix(*agentFile, "zip") {
+		unzip(agentFile, &cliArgs.AgentDirectory)
+	} else {
+		log.Fatal("Unsupported agent format!")
+	}
+
+	return agentFile
+}
+
+func unzip(src *string, dest *string) {
+    r, err := zip.OpenReader(*src)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer r.Close()
+
+    for _, f := range r.File {
+
+        // Store filename/path for returning and using later on
+        fpath := filepath.Join(*dest, f.Name)
+
+        // Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
+        if !strings.HasPrefix(fpath, filepath.Clean(*dest)+string(os.PathSeparator)) {
+        	log.Fatal(fmt.Sprintf("%s: illegal file path", fpath))
+        }
+
+		fmt.Println(fpath)
+
+        if f.FileInfo().IsDir() {
+            // Make Folder
+            os.MkdirAll(fpath, os.ModePerm)
+            continue
+        }
+
+        // Make File
+        if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+            log.Fatal(err)
+        }
+
+        outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        rc, err := f.Open()
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        _, err = io.Copy(outFile, rc)
+
+        // Close the file without defer to close before next iteration of loop
+        outFile.Close()
+        rc.Close()
+
+        if err != nil {
+            log.Fatal(err)
+        }
+    }
+}
+
+func untar(agentFile *string, dest *string) {
 	file, err := os.Open(*agentFile)
 
 	if err != nil {
@@ -111,7 +177,7 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 
 		// get the individual filename and extract to the current directory
 		if !strings.Contains(header.Name, "..") {
-			filename := fmt.Sprintf("%s/%s", cliArgs.AgentDirectory, header.Name)
+			filename := filepath.Join(*dest, header.Name)
 
 			switch header.Typeflag {
 			case tar.TypeDir:
@@ -146,14 +212,12 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 			}
 		}
 	}
-
-	return agentFile
 }
 
 func DownloadSigningRootCert(client *s3.Client, cliArgs *cli.CliArgs) {
 	certBucket := "sagemaker-edge-release-store-us-west-2-linux-x64"
 	certKey := "Certificates/us-west-2/us-west-2.pem"
-	certPath := fmt.Sprintf("%s/certificates/us-west-2.pem", cliArgs.AgentDirectory)
+	certPath := filepath.Join(cliArgs.AgentDirectory, "certificates", "us-west-2.pem")
 	aws.DownloadFileFromS3ToPath(client, &certBucket, &certKey, &certPath)
 	os.Chmod(certPath, 0400)
 }

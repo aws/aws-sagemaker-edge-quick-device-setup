@@ -5,12 +5,11 @@ import (
 	"aws-sagemaker-edge-quick-device-setup/cli"
 	"aws-sagemaker-edge-quick-device-setup/common"
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
-
+	"path/filepath"
 	awsStd "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -93,20 +92,20 @@ func main() {
 	log.Println("Step-12 Completed.")
 
 	log.Println("Step-13 Configuring Agent...")
-	certsDirectory := fmt.Sprintf("%s/iot-credentials", cliArgs.AgentDirectory)
+	certsDirectory := filepath.Join(cliArgs.AgentDirectory, "iot-credentials")
 	aws.WriteCertificatesToFile(certs, &cliArgs.DeviceFleet, &cliArgs.DeviceName, &certsDirectory)
-	rootCAPath := fmt.Sprintf("%s/AmazonRootCA1.pem", certsDirectory)
+	rootCAPath := filepath.Join(certsDirectory, "AmazonRootCA1.pem")
 	common.DownloadFile(rootCAPath, "https://www.amazontrust.com/repository/AmazonRootCA1.pem")
 	config := common.AgentConfig{}
-	configPath := fmt.Sprintf("%s/sagemaker_edge_config.json", cliArgs.AgentDirectory)
+	configPath := filepath.Join(cliArgs.AgentDirectory, "sagemaker_edge_config.json")
 	config.FromCliArgs(&cliArgs)
 	roleAliasArn := aws.GetRoleAliasArn(smClient, &cliArgs.DeviceFleet)
 	aws.CreateAndAttachRoleAliasPolicy(iotClient, roleAliasArn, certs.CertificateArn, &cliArgs.IotThingName)
 	roleAliasSplits := strings.Split(*roleAliasArn, "/")
 	config.ProviderAwsIotCredEndpoint = *aws.GetIotCredentialProviderEndpoint(iotClient, &roleAliasSplits[1])
 	config.WriteToJson(&configPath)
-	agentBinaryPath := fmt.Sprintf("%s/bin/sagemaker_edge_agent_binary", cliArgs.AgentDirectory)
-	agentClientPath := fmt.Sprintf("%s/bin/sagemaker_edge_agent_client_example", cliArgs.AgentDirectory)
+	agentBinaryPath := filepath.Join(cliArgs.AgentDirectory, "bin", "sagemaker_edge_agent_binary")
+	agentClientPath := filepath.Join(cliArgs.AgentDirectory, "bin", "sagemaker_edge_agent_client_example")
 	os.Chmod(agentBinaryPath, 0700)
 	os.Chmod(agentClientPath, 0700)
 	log.Println("Step-13 Completed.")

@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"time"
-
+	"path/filepath"
 	"github.com/aws/aws-sdk-go-v2/service/iot"
 	"github.com/aws/aws-sdk-go-v2/service/iot/types"
 )
@@ -152,9 +152,9 @@ func writeStringToFile(filePath *string, contents *string) {
 
 func WriteCertificatesToFile(certs *iot.CreateKeysAndCertificateOutput, fleetName *string, deviceName *string, certsDirectory *string) {
 	os.MkdirAll(*certsDirectory, os.ModePerm)
-	pemFilePath := fmt.Sprintf("%s/device.pem.crt", *certsDirectory)
-	privateKeyFilePath := fmt.Sprintf("%s/private.pem.key", *certsDirectory)
-	publicKeyFilePath := fmt.Sprintf("%s/public.pem.key.pub", *certsDirectory)
+	pemFilePath := filepath.Join(*certsDirectory, "device.pem.crt")
+	privateKeyFilePath := filepath.Join(*certsDirectory, "private.pem.key")
+	publicKeyFilePath := filepath.Join(*certsDirectory, "public.pem.key.pub")
 
 	writeStringToFile(&pemFilePath, certs.CertificatePem)
 	writeStringToFile(&privateKeyFilePath, certs.KeyPair.PrivateKey)

@@ -22,17 +22,17 @@ This README is for aws-sagemaker-edge-quick-device-setup version 0.0.1
 Installation
 ------------
 
-`aws-sagemaker-edge-quick-device-setup` is written in golang. You can also geneate the binary directly from the source using
+`aws-sagemaker-edge-quick-device-setup` is written in golang. You can also generate the binary directly from the source using
 
 `go build` 
 
-Optionally there is a build script to generate binaries and shasums for the relevant os/architecture combination
+Optionally there is a build script to generate binaries and shasums for the relevant OS/architecture combination
 
 
-We support out of the the box distributions for known os and architectures. Check out [Releases](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases) for latest distributions.
+We support out of the the box distributions for known OS and architectures. Check out [Releases](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases) for latest distributions.
 
 
-`bash build.sh {os} {arch}`
+`bash build.sh {OS} {ARCH}`
 
 Configuration
 -------------
@@ -144,7 +144,7 @@ To get the version of the cli:
 Sample
 ------
 
-If your device is linux amd64(x86_64). You could use one of the pre built distribution [aws-sagemaker-edge-quick-device-setup-linux-amd64](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases/download/v0.0.1/aws-sagemaker-edge-quick-device-setup-linux-amd64) to setup the device. For distributions os and architecture are hardcoded into the binaries.
+If your device is linux amd64(x86_64). You could use one of the pre built distribution [aws-sagemaker-edge-quick-device-setup-linux-amd64](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases/download/v0.0.1/aws-sagemaker-edge-quick-device-setup-linux-amd64) to setup the device. For distributions OS and architecture are hardcoded into the binaries.
 
 ```
    $ aws-sagemaker-edge-quick-device-setup-linux-amd64 --deviceFleet TestFleet --device TestDevice -account AWS_ACCOUNT_ID
@@ -160,7 +160,7 @@ requests.
 
 
 Please check for open similar
-[issues](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/issues/)before opening
+[issues](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/issues/) before opening
 another one.
 
 More Resources

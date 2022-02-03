@@ -28,9 +28,7 @@ func CreateS3Bucket(client S3Client, bucketName *string, accountId *string) *str
 
 	_, err := client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: bucketName,
-		CreateBucketConfiguration: &types.CreateBucketConfiguration{
-			LocationConstraint: types.BucketLocationConstraintUsWest2,
-		},
+		CreateBucketConfiguration: &types.CreateBucketConfiguration{},
 	})
 	if err != nil {
 		var bne *types.BucketAlreadyOwnedByYou

@@ -25,18 +25,28 @@ func main() {
 	cliArgs.Print()
 
 	// return retry.AddWithErrorCodes(retry.NewStandard(), (*smTypes.Mal)(nil).ErrorCode())
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(cliArgs.Region), config.WithRetryer(func() awsStd.Retryer {
+	cfgCustomRegion, errCustomRegion := config.LoadDefaultConfig(context.TODO(), config.WithRegion(cliArgs.Region), config.WithRetryer(func() awsStd.Retryer {
 		return retry.AddWithErrorCodes(retry.AddWithMaxBackoffDelay(retry.AddWithMaxAttempts(retry.NewStandard(), 5), 1*time.Second), "ValidationException", "ThrottlingException")
 	}))
 
-	if err != nil {
-		log.Fatal("Failed to load default aws config. Encountered Error ", err)
+	// return retry.AddWithErrorCodes(retry.NewStandard(), (*smTypes.Mal)(nil).ErrorCode())
+	cfgUsWest2, errUsWest2 := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-west-2"), config.WithRetryer(func() awsStd.Retryer {
+		return retry.AddWithErrorCodes(retry.AddWithMaxBackoffDelay(retry.AddWithMaxAttempts(retry.NewStandard(), 5), 1*time.Second), "ValidationException", "ThrottlingException")
+	}))
+
+	if errCustomRegion != nil {
+		log.Fatal("Failed to load default aws config. Encountered Error ", errCustomRegion)
 	}
 
-	iamClient := iam.NewFromConfig(cfg)
-	smClient := sagemaker.NewFromConfig(cfg)
-	iotClient := iot.NewFromConfig(cfg)
-	s3Client := s3.NewFromConfig(cfg)
+	if errUsWest2 != nil {
+		log.Fatal("Failed to load default aws config. Encountered Error ", errUsWest2)
+	}
+
+	iamClient := iam.NewFromConfig(cfgCustomRegion)
+	smClient := sagemaker.NewFromConfig(cfgCustomRegion)
+	iotClient := iot.NewFromConfig(cfgCustomRegion)
+	s3Client := s3.NewFromConfig(cfgCustomRegion)
+	s3ClientUsWest2 := s3.NewFromConfig(cfgUsWest2)
 
 	log.Println("Step-1 Creating S3 bucket for storing device fleet data...")
 	s3OutputLocation := aws.CreateS3Bucket(s3Client, &cliArgs.DeviceFleetBucket, &cliArgs.Account)
@@ -76,11 +86,11 @@ func main() {
 	log.Println("Step-8 Completed.")
 
 	log.Println("Step-9 Downloading Agent...")
-	common.DownloadAgent(s3Client, &cliArgs)
+	common.DownloadAgent(s3ClientUsWest2, &cliArgs)
 	log.Println("Step-9 Completed.")
 
 	log.Println("Step-10 Downloading code signing root certificate...")
-	common.DownloadSigningRootCert(s3Client, &cliArgs)
+	common.DownloadSigningRootCert(s3ClientUsWest2, &cliArgs)
 	log.Println("Step-10 Completed.")
 
 	log.Println("Step-11 Creating iot certificates...")

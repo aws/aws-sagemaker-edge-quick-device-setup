@@ -38,12 +38,13 @@ Configuration
 -------------
 
 Before using the cli, you need to configure your AWS credentials. Go to https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html to learn about how to configure aws credentials.
+Since the required IAM policy is fairly permissive and the credentials are only neede during setup, we recommend to use [temporary credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html).
 
 
 Permissions
 -----------
 
-In order to invoke the CLI to create required resources in cloud the user/role must have required permission. You can create/attach a policy containng the following permissions.
+In order to invoke the CLI to create required resources in cloud the user/role must have required permission. You can create/attach a policy containing the following permissions.
 
 ```
 {

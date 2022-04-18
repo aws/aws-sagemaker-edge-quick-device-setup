@@ -49,7 +49,7 @@ func main() {
 	s3ClientUsWest2 := s3.NewFromConfig(cfgUsWest2)
 
 	log.Println("Step-1 Creating S3 bucket for storing device fleet data...")
-	s3OutputLocation := aws.CreateS3Bucket(s3Client, &cliArgs.DeviceFleetBucket, &cliArgs.Account)
+	s3OutputLocation := aws.CreateS3Bucket(s3Client, &cliArgs.DeviceFleetBucket, &cliArgs.Account, &cliArgs.Region)
 	if s3OutputLocation == nil {
 		return
 	}
@@ -77,7 +77,10 @@ func main() {
 	aws.CreateIotThing(iotClient, &cliArgs.IotThingType, &cliArgs.IotThingName)
 	log.Println("Step-6 Completed.")
 
+
 	log.Println("Step-7 Creating device fleet...")
+	// Sleep for 5 seconds before creating fleet.
+	time.Sleep(5*time.Second)
 	aws.CreateDeviceFleet(smClient, &cliArgs.DeviceFleet, role, s3OutputLocation)
 	log.Println("Step-7 Completed.")
 

@@ -20,16 +20,25 @@ type S3Client interface {
 	GetObject(context.Context, *s3.GetObjectInput, ...func(*s3.Options)) (*s3.GetObjectOutput, error)
 }
 
-func CreateS3Bucket(client S3Client, bucketName *string, accountId *string) *string {
+func CreateS3Bucket(client S3Client, bucketName *string, accountId *string, region *string) *string {
 
 	if *bucketName == "" {
 		*bucketName = fmt.Sprintf("sagemaker-edgemanager-%s", *accountId)
 	}
 
+	locationConstraint := types.BucketLocationConstraint(*region)
+	if *region == "us-east-1" {
+		locationConstraint = types.BucketLocationConstraintEu
+	}
+
 	_, err := client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: bucketName,
-		CreateBucketConfiguration: &types.CreateBucketConfiguration{},
+		CreateBucketConfiguration: &types.CreateBucketConfiguration{
+			LocationConstraint: locationConstraint,
+		},
 	})
+
+
 	if err != nil {
 		var bne *types.BucketAlreadyOwnedByYou
 		var be *types.BucketAlreadyExists

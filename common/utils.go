@@ -216,8 +216,8 @@ func untar(agentFile *string, dest *string) {
 
 func DownloadSigningRootCert(client *s3.Client, cliArgs *cli.CliArgs) {
 	certBucket := "sagemaker-edge-release-store-us-west-2-linux-x64"
-	certKey := "Certificates/us-west-2/us-west-2.pem"
-	certPath := filepath.Join(cliArgs.AgentDirectory, "certificates", "us-west-2.pem")
+	certKey := fmt.Sprintf("Certificates/%s/%s.pem", cliArgs.Region, cliArgs.Region)
+	certPath := filepath.Join(cliArgs.AgentDirectory, "certificates", fmt.Sprintf("%s.pem", cliArgs.Region))
 	aws.DownloadFileFromS3ToPath(client, &certBucket, &certKey, &certPath)
 	os.Chmod(certPath, 0400)
 }

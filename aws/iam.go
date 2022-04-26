@@ -278,6 +278,8 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 		}
 
 		log.Fatalf("Failed to get policy with name %s. Encountered error %s\n", policyName, err)
+	} else {
+		log.Println("Policy already exists in the account!")
 	}
 
 	return getPolicyOutput.Policy

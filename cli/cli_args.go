@@ -67,8 +67,8 @@ func (cliArgs *CliArgs) Print() {
 	fmt.Printf("Device Fleet Role: %s\n", cliArgs.DeviceFleetRole)
 	fmt.Printf("Device Fleet Bucket: %s\n", cliArgs.DeviceFleetBucket)
 	fmt.Printf("Agent Directory: %s\n", cliArgs.AgentDirectory)
-	fmt.Printf("Enable DB Module: %s\n", cliArgs.EnableDB)
-	fmt.Printf("Enable Deployment Library: %s\n", cliArgs.EnableDeployment)
+	fmt.Printf("Enable DB Module: %t\n", cliArgs.EnableDB)
+	fmt.Printf("Enable Deployment Library: %t\n", cliArgs.EnableDeployment)
 	cliArgs.TargetPlatform.Print()
 }
 

@@ -26,6 +26,11 @@ type AgentConfig struct {
 	ProviderProviderPath         string `json:"sagemaker_edge_provider_provider_path"`
 	S3BucketName                 string `json:"sagemaker_edge_provider_s3_bucket_name"`
 	DataCaptureDestination       string `json:"sagemaker_edge_core_capture_data_destination"`
+	DBModulePath                 string `json:"sagemaker_edge_db_module_path,omitempty"`
+	LocalDataRootPath            string `json:"sagemaker_edge_local_data_root_path,omitempty"`
+	DeploymentLibPath            string `json:"sagemaker_edge_deployment_lib_path,omitempty"`
+	DeploymentPollInterval       int    `json:"sagemaker_edge_model_deployment_poll_interval,omitempty"`
+	DLRBackendOptions            string `json:"sagemaker_edge_dlr_backend_options,omitempty"`
 }
 
 func (config *AgentConfig) FromCliArgs(cliArgs *cli.CliArgs) {
@@ -44,6 +49,15 @@ func (config *AgentConfig) FromCliArgs(cliArgs *cli.CliArgs) {
 	config.ProviderAwsIotCredEndpoint = "endpoint"
 	config.ProviderProvider = "Aws"
 	config.ProviderProviderPath = filepath.Join(cliArgs.AgentDirectory, "lib", "libprovider_aws.so")
+	if cliArgs.EnableDB {
+		config.DBModulePath = filepath.Join(cliArgs.AgentDirectory, "lib", "libsagemaker_db_handler_library.so")
+		config.LocalDataRootPath = filepath.Join(cliArgs.AgentDirectory, "local_data")
+	}
+	if cliArgs.EnableDeployment {
+		config.DeploymentLibPath = filepath.Join(cliArgs.AgentDirectory, "lib", "libdeployment_smedge_library.so")
+		config.DeploymentPollInterval = 1440
+	}
+	config.DLRBackendOptions = ""
 	config.S3BucketName = cliArgs.DeviceFleetBucket
 	config.DataCaptureDestination = "Cloud"
 }

@@ -138,6 +138,7 @@ func CreateDeviceFleetBucketPolicy(client IamClient, cliArgs *cli.CliArgs) *type
 				Action: []string{
 					"s3:PutObject",
 					"s3:GetBucketLocation",
+					"s3:GetObject",
 				},
 				Resource: []string{
 					fmt.Sprintf("arn:aws:s3:::%s/*", cliArgs.DeviceFleetBucket),
@@ -205,6 +206,7 @@ func CreateDeviceFleetPolicy(client IamClient, cliArgs *cli.CliArgs) *types.Poli
 				Action: []string{
 					"sagemaker:SendHeartbeat",
 					"sagemaker:GetDeviceRegistration",
+					"sagemaker:GetDeployments",
 				},
 				Resource: []string{
 					fmt.Sprintf("arn:aws:sagemaker:%s:%s:device-fleet/%s/device/*", cliArgs.Region, cliArgs.Account, strings.ToLower(cliArgs.DeviceFleet)),

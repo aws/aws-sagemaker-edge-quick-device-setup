@@ -14,14 +14,3 @@ jobs:
         run: go get ./...
       - name: Run tests
         run: go test ./... -v
-  test-on-windows:
-    runs-on: windows-2022
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Setup go
-        uses: actions/setup-go@v2
-      - name: Download dependencies
-        run: go get ./...
-      - name: Run tests
-        run: go test ./... -v

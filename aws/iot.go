@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
-	"os"
-	"time"
-	"path/filepath"
 	"github.com/aws/aws-sdk-go-v2/service/iot"
 	"github.com/aws/aws-sdk-go-v2/service/iot/types"
+	"log"
+	"os"
+	"path/filepath"
+	"time"
 )
 
 type IotClient interface {

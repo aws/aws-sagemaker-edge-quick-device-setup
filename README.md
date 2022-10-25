@@ -32,7 +32,7 @@ Optionally there is a build script to generate binaries and shasums for the rele
 We support out of the the box distributions for known OS and architectures. Check out [Releases](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases) for latest distributions.
 
 
-`bash build.sh {OS} {ARCH}`
+`bash ./build.sh {OS} {ARCH}`
 
 Configuration
 -------------
@@ -69,12 +69,14 @@ In order to invoke the CLI to create required resources in cloud the user/role m
                 "iot:CreateThingType",
                 "iot:CreateKeysAndCertificate",
                 "iot:DescribeThingType",
+                "iot:DescribeEndpoint",
                 "s3:CreateBucket",
                 "sagemaker:DescribeDeviceFleet",
                 "sagemaker:RegisterDevices",
                 "sagemaker:UpdateDevices",
                 "sagemaker:CreateDeviceFleet",
-                "sagemaker:DescribeDevice"
+                "sagemaker:DescribeDevice",
+                "sagemaker:AddTags"
             ],
             "Resource": "*"
         },
@@ -87,13 +89,19 @@ In order to invoke the CLI to create required resources in cloud the user/role m
 }
 ```
 
+Also attach ` SagemakerFullAccess` policy to the user/role.
+
 Basic Commands
 --------------
 
-The CLI command has the following structure:
+The CLI command has the following structure: (Replace OS , ARCH with os, architecture of choice)
 
 ```
-   $ aws-sagemaker-edge-quick-device-setup --[options]
+   # If built from source, change into bin directory of repo to access binary.
+   $ cd bin/
+   $ aws-sagemaker-edge-quick-device-setup-{OS}-{ARCH} --[options]
+   # Eg: for linux
+   $ aws-sagemaker-edge-quick-device-setup-linux-amd64 --options
 ```
 
 Following are all the arguments supported by the cli. The important ones 
@@ -137,13 +145,13 @@ Following are all the arguments supported by the cli. The important ones
 To view help documentation, use one of the following:
 
 ```
-   $ aws-sagemaker-edge-quick-device-setup --help
+   $ aws-sagemaker-edge-quick-device-setup-{OS}-{ARCH} --help
 ```
 
 To get the version of the cli:
 
 ```
-   $ aws-sagemaker-edge-quick-device-setup --version
+   $ aws-sagemaker-edge-quick-device-setup-{OS}-{ARCH} --version
 ```
 
 Sample
@@ -151,8 +159,10 @@ Sample
 
 If your device is linux amd64(x86_64). You could use one of the pre built distribution [aws-sagemaker-edge-quick-device-setup-linux-amd64](https://github.com/aws/aws-sagemaker-edge-quick-device-setup/releases/download/v0.0.1/aws-sagemaker-edge-quick-device-setup-linux-amd64) to setup the device. For distributions OS and architecture are hardcoded into the binaries.
 
+**NOTE**: `deviceName` and `deviceFleet` are expected to be lower case. If upper case names are given, the tool converts them to lower case equivalent.
+
 ```
-   $ aws-sagemaker-edge-quick-device-setup-linux-amd64 --deviceFleet TestFleet --device TestDevice -account AWS_ACCOUNT_ID
+   $ aws-sagemaker-edge-quick-device-setup-{OS}-{ARCH} --deviceFleet test-fleet --deviceName test-device --account AWS_ACCOUNT_ID
 ```
 
 Getting Help

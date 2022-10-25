@@ -5,11 +5,6 @@ import (
 	"aws-sagemaker-edge-quick-device-setup/cli"
 	"aws-sagemaker-edge-quick-device-setup/common"
 	"context"
-	"log"
-	"os"
-	"strings"
-	"time"
-	"path/filepath"
 	awsStd "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -17,6 +12,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/iot"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/sagemaker"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 func main() {
@@ -77,10 +77,9 @@ func main() {
 	aws.CreateIotThing(iotClient, &cliArgs.IotThingType, &cliArgs.IotThingName)
 	log.Println("Step-6 Completed.")
 
-
 	log.Println("Step-7 Creating device fleet...")
 	// Sleep for 5 seconds before creating fleet.
-	time.Sleep(5*time.Second)
+	time.Sleep(5 * time.Second)
 	aws.CreateDeviceFleet(smClient, &cliArgs.DeviceFleet, role, s3OutputLocation)
 	log.Println("Step-7 Completed.")
 

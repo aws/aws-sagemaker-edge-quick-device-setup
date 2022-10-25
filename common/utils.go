@@ -2,20 +2,20 @@ package common
 
 import (
 	"archive/tar"
+	"archive/zip"
 	"aws-sagemaker-edge-quick-device-setup/aws"
 	"aws-sagemaker-edge-quick-device-setup/cli"
 	"aws-sagemaker-edge-quick-device-setup/constants"
 	"compress/gzip"
-	"archive/zip"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-	"path/filepath"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
@@ -99,55 +99,55 @@ func DownloadAgent(client *s3.Client, cliArgs *cli.CliArgs) *string {
 }
 
 func unzip(src *string, dest *string) {
-    r, err := zip.OpenReader(*src)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer r.Close()
+	r, err := zip.OpenReader(*src)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer r.Close()
 
-    for _, f := range r.File {
+	for _, f := range r.File {
 
-        // Store filename/path for returning and using later on
-        fpath := filepath.Join(*dest, f.Name)
+		// Store filename/path for returning and using later on
+		fpath := filepath.Join(*dest, f.Name)
 
-        // Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
-        if !strings.HasPrefix(fpath, filepath.Clean(*dest)+string(os.PathSeparator)) {
-        	log.Fatal(fmt.Sprintf("%s: illegal file path", fpath))
-        }
+		// Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
+		if !strings.HasPrefix(fpath, filepath.Clean(*dest)+string(os.PathSeparator)) {
+			log.Fatal(fmt.Sprintf("%s: illegal file path", fpath))
+		}
 
 		fmt.Println(fpath)
 
-        if f.FileInfo().IsDir() {
-            // Make Folder
-            os.MkdirAll(fpath, os.ModePerm)
-            continue
-        }
+		if f.FileInfo().IsDir() {
+			// Make Folder
+			os.MkdirAll(fpath, os.ModePerm)
+			continue
+		}
 
-        // Make File
-        if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-            log.Fatal(err)
-        }
+		// Make File
+		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			log.Fatal(err)
+		}
 
-        outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-        if err != nil {
-            log.Fatal(err)
-        }
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			log.Fatal(err)
+		}
 
-        rc, err := f.Open()
-        if err != nil {
-            log.Fatal(err)
-        }
+		rc, err := f.Open()
+		if err != nil {
+			log.Fatal(err)
+		}
 
-        _, err = io.Copy(outFile, rc)
+		_, err = io.Copy(outFile, rc)
 
-        // Close the file without defer to close before next iteration of loop
-        outFile.Close()
-        rc.Close()
+		// Close the file without defer to close before next iteration of loop
+		outFile.Close()
+		rc.Close()
 
-        if err != nil {
-            log.Fatal(err)
-        }
-    }
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func untar(agentFile *string, dest *string) {

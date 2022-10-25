@@ -25,18 +25,13 @@ func (tp *TargetPlatform) Print() {
 }
 
 func (tp *TargetPlatform) Validate() {
-	if tp.Os != "linux" && tp.Os != "windows" {
+	if tp.Os != "linux" {
 		log.Fatal("Invalid Os!")
 	}
 
 	if tp.Os == "linux" {
 		if tp.Arch != constants.ARM64 && tp.Arch != constants.ARMV8 && tp.Arch != constants.AMD64 && tp.Arch != constants.X64 && tp.Arch != constants.X86_64 {
 			log.Fatal("Invalid architecture for Linux.")
-		}
-	}
-	if tp.Os == "windows" {
-		if tp.Arch != constants.AMD64 && tp.Arch != constants.I386 && tp.Arch != constants.X86 && tp.Arch != constants.X64 && tp.Arch != constants.X86_64 {
-			log.Fatal("Invalid architecture for Windows.")
 		}
 	}
 }
@@ -77,7 +72,6 @@ func ParseArgs(cliArgs *CliArgs) {
 	region := flag.String("region", "us-west-2", "AWS Region.")
 	deviceFleet := flag.String("deviceFleet", "", "Name of the device fleet (required).")
 	deviceName := flag.String("deviceName", "", "Name of the device (required).")
-
 	targetOs := flag.String("os", "", "Name of operating system (optional with distribution binary).")
 	targetArch := flag.String("arch", "", "Name of device architecture (optional with distribution binary).")
 	targetAccelerator := flag.String("accelerator", "", "Name of accelerator (optional).")
@@ -125,8 +119,8 @@ func ParseArgs(cliArgs *CliArgs) {
 		log.Fatal("Missing deviceFleet or deviceName or account")
 	}
 
-	cliArgs.DeviceFleet = *deviceFleet
-	cliArgs.DeviceName = *deviceName
+	cliArgs.DeviceFleet = strings.ToLower(*deviceFleet)
+	cliArgs.DeviceName = strings.ToLower(*deviceName)
 
 	if *targetOs == "" {
 		log.Println(distinfo.OS)

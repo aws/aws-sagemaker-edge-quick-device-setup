@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"io/ioutil"
 	"path/filepath"
 
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
@@ -37,7 +37,6 @@ func CreateS3Bucket(client S3Client, bucketName *string, accountId *string, regi
 			LocationConstraint: locationConstraint,
 		},
 	})
-
 
 	if err != nil {
 		var bne *types.BucketAlreadyOwnedByYou

@@ -50,7 +50,7 @@ func (config *AgentConfig) FromCliArgs(cliArgs *cli.CliArgs) {
 	config.ProviderProvider = "Aws"
 	config.ProviderProviderPath = filepath.Join(cliArgs.AgentDirectory, "lib", "libprovider_aws.so")
 	if cliArgs.EnableDB {
-		config.DBModulePath = filepath.Join(cliArgs.AgentDirectory, "lib", "libsagemaker_db_handler_library.so")
+		config.DBModulePath = filepath.Join(cliArgs.AgentDirectory, "lib", "libsagemaker_edge_db_handler_library.so")
 		config.LocalDataRootPath = filepath.Join(cliArgs.AgentDirectory, "local_data")
 	}
 	if cliArgs.EnableDeployment {

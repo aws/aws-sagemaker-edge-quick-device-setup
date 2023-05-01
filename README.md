@@ -1,3 +1,6 @@
+| :rotating_light: **ALERT**: We are retiring Amazon Sagemaker Edge on April 26th, 2024. Use this [step-by-step guide]( https://docs.aws.amazon.com/sagemaker/latest/dg/edge-eol.html) to learn about how to continue deploying your models to edge devices. :rotating_light:|
+| --- |
+
 | &#9888; **WARNING**: This tool is meant for development/testing use only. We don't recommend the use of this tool for production! &#9888; |
 | --- |
 

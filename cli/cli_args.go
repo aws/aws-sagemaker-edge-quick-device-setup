@@ -135,7 +135,7 @@ func ParseArgs(cliArgs *CliArgs) {
 	cliArgs.TargetPlatform.Validate()
 
 	cliArgs.Account = *accountId
-	cliArgs.Region = *region
+	cliArgs.Region = strings.ToLower(*region)
 	cliArgs.AgentDirectory = *agentDirectory
 	cliArgs.EnableDB = *enableDB
 	if *enableDeployment == true && *enableDB != true {
